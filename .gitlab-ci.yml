@@ -1,0 +1,12 @@
+image: ruby:2.5
+
+cache:
+  paths:
+  - vendor/
+
+test:
+  stage: test
+  script:
+  - apt-get update -qy
+  - bundle install --path vendor
+  - bundle exec rake test

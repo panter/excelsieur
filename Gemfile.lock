@@ -1,0 +1,30 @@
+PATH
+  remote: .
+  specs:
+    excelsior (0.1.0)
+      simple_xlsx_reader (~> 1.0.2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    mini_portile2 (2.3.0)
+    minitest (5.11.3)
+    nokogiri (1.8.2)
+      mini_portile2 (~> 2.3.0)
+    rake (10.5.0)
+    rubyzip (1.2.1)
+    simple_xlsx_reader (1.0.2)
+      nokogiri
+      rubyzip
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.16)
+  excelsior!
+  minitest (~> 5.0)
+  rake (~> 10.0)
+
+BUNDLED WITH
+   1.16.1
