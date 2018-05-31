@@ -1,5 +1,6 @@
 require "simple_xlsx_reader"
-
+require "active_support"
+require "active_support/core_ext"
 require "excelsior/source"
 require "excelsior/mapping"
 
@@ -24,9 +25,14 @@ module Excelsior
       valid?
     end
 
-    def run(&block)
+    def run # takes an optional block
       @rows.map do |row|
-        yield map_row_values(row, @columns)
+        attributes = map_row_values(row, @columns)
+        if block_given?
+          yield attributes
+        else
+          model_class.create!(attributes)
+        end
       end
     end
 
@@ -39,6 +45,12 @@ module Excelsior
         end
         acc
       end
+    end
+
+    private
+
+    def model_class
+      self.class.name.gsub("Import", "").constantize
     end
   end
 end

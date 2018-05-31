@@ -9,6 +9,19 @@ class UserImport < Excelsior::Import
   map "E-Mail", to: :email
 end
 
+class User
+  class << self
+    def create!(attributes)
+      @all ||= []
+      @all << attributes
+    end
+
+    def all
+      @all ||= []
+    end
+  end
+end
+
 class ExcelsiorTest < Minitest::Test
   def setup
     @import = UserImport.new
@@ -48,6 +61,11 @@ class ExcelsiorTest < Minitest::Test
   end
 
   def test_import_run
+    results = @import.run
+    assert_equal User.all.size, 2
+  end
+
+  def test_import_run_with_block
     results = @import.run { |v| v }
     assert_equal results[0], {
       firstname: "Hans",

@@ -36,10 +36,21 @@ class UserImporter < Excelsior::Importer
 end
 ```
 
-Then create an instance of your import and run it:
+Create an instance of your import and run it. By default it infers the model
+to be imported from the classname, e.g.:
 
 ```ruby
-import = UserImport.new # you may also pass a file per instance here
+import = UserImport.new
+import.run # calls User.create!(row) for each row
+```
+
+### Extended API
+
+You may want to pass an excel file per instance. You can also define your own
+import behavior by passing a block to the `run` method:
+
+```ruby
+import = UserImport.new("users/all.xlsx")
 import.run do |row|
   User.create!(row) # raise an exception if the data doesn't match your expectations
 end
