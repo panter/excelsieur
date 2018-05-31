@@ -4,13 +4,14 @@ require 'active_record'
 require 'excelsior/source'
 require 'excelsior/mapping'
 require 'excelsior/error'
+require 'excelsior/report'
 
 module Excelsior
   class Import
     include Source
     include Mapping
 
-    attr_accessor :source, :fields, :errors
+    attr_accessor :source, :fields, :errors, :report
     attr_accessor :rows, :columns
 
     def initialize(file = nil)
@@ -22,6 +23,8 @@ module Excelsior
 
       @columns = @sheet.rows.shift
       @rows = @sheet.rows
+
+      @report = Report.new
 
       valid?
     end
@@ -56,7 +59,12 @@ module Excelsior
     end
 
     def add_model_errors(record, index)
-      return if record.errors.empty?
+      if record.errors.empty?
+        @report.inserted += 1
+        return
+      end
+
+      @report.failed += 1
 
       @errors[:model] ||= []
 

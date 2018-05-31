@@ -81,4 +81,11 @@ class ExcelsiorTest < Minitest::Test
     assert import.errors[:model].any?
     assert_equal import.errors[:model], [Excelsior::Error.new(3, ["First name can't be blank"])]
   end
+
+  def test_report
+    import = UserImport.new("test/files/missing-first-name.xlsx").tap(&:run)
+    assert_equal 2, import.report.inserted
+    assert_equal 1, import.report.failed
+    assert_equal 3, import.report.total
+  end
 end
