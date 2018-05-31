@@ -15,6 +15,7 @@ end
 
 class ExcelsiorTest < Minitest::Test
   def setup
+    User.delete_all
     @import = UserImport.new
   end
 
@@ -73,5 +74,11 @@ class ExcelsiorTest < Minitest::Test
   def test_validations
     import = UserImport.new("test/files/missing-column.xlsx")
     assert import.errors[:missing_column].any?
+  end
+
+  def test_model_validations
+    import = UserImport.new("test/files/missing-first-name.xlsx").tap(&:run)
+    assert import.errors[:model].any?
+    assert_equal import.errors[:model], [Excelsior::Error.new(3, ["First name can't be blank"])]
   end
 end

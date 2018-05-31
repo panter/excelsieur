@@ -3,6 +3,7 @@ require 'rails'
 require 'active_record'
 require 'excelsior/source'
 require 'excelsior/mapping'
+require 'excelsior/error'
 
 module Excelsior
   class Import
@@ -26,12 +27,13 @@ module Excelsior
     end
 
     def run # takes an optional block
-      @rows.map do |row|
+      @rows.map.with_index do |row, i|
         attributes = map_row_values(row, @columns)
         if block_given?
           yield attributes
         else
-          model_class.create!(attributes)
+          record = model_class.create(attributes)
+          add_model_errors(record, i)
         end
       end
     end
@@ -51,6 +53,14 @@ module Excelsior
 
     def model_class
       self.class.name.gsub("Import", "").constantize
+    end
+
+    def add_model_errors(record, index)
+      return if record.errors.empty?
+
+      @errors[:model] ||= []
+
+      @errors[:model] << Error.new(index + 1, record.errors.full_messages)
     end
   end
 end
