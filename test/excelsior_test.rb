@@ -4,22 +4,13 @@ require "excelsior/import"
 class UserImport < Excelsior::Import
   source "test/files/complete.xlsx"
 
-  map "Vorname", to: :firstname
-  map "Nachname", to: :lastname
+  map "Vorname", to: :first_name
+  map "Nachname", to: :last_name
   map "E-Mail", to: :email
 end
 
-class User
-  class << self
-    def create!(attributes)
-      @all ||= []
-      @all << attributes
-    end
-
-    def all
-      @all ||= []
-    end
-  end
+class User < ActiveRecord::Base
+  validates :first_name, presence: true
 end
 
 class ExcelsiorTest < Minitest::Test
@@ -54,27 +45,27 @@ class ExcelsiorTest < Minitest::Test
 
   def test_mapping
     assert_equal @import.fields, [
-      {attribute: :firstname, header: "Vorname"},
-      {attribute: :lastname, header: "Nachname"},
-      {attribute: :email, header: "E-Mail"}
+      { attribute: :first_name, header: "Vorname" },
+      { attribute: :last_name, header: "Nachname" },
+      { attribute: :email, header: "E-Mail" }
     ]
   end
 
   def test_import_run
-    results = @import.run
+    @import.run
     assert_equal User.all.size, 2
   end
 
   def test_import_run_with_block
     results = @import.run { |v| v }
     assert_equal results[0], {
-      firstname: "Hans",
-      lastname: "Müller",
+      first_name: "Hans",
+      last_name: "Müller",
       email: "hans@mueller.com"
     }
     assert_equal results[1], {
-      firstname: "Jögi",
-      lastname: "Brunz",
+      first_name: "Jögi",
+      last_name: "Brunz",
       email: "jb@runz.com"
     }
   end

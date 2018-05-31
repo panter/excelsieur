@@ -1,8 +1,8 @@
-require "simple_xlsx_reader"
-require "active_support"
-require "active_support/core_ext"
-require "excelsior/source"
-require "excelsior/mapping"
+require 'simple_xlsx_reader'
+require 'rails'
+require 'active_record'
+require 'excelsior/source'
+require 'excelsior/mapping'
 
 module Excelsior
   class Import
