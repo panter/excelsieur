@@ -33,7 +33,13 @@ module Excelsior
       @rows.map.with_index do |row, i|
         attributes = map_row_values(row, @columns)
         if block_given?
-          yield attributes
+          begin
+            result = yield attributes
+            report_insert
+            result
+          rescue
+            report_failure
+          end
         else
           record = model_class.create(attributes)
           add_model_errors(record, i)
@@ -60,15 +66,23 @@ module Excelsior
 
     def add_model_errors(record, index)
       if record.errors.empty?
-        @report.inserted += 1
+        report_insert
         return
       end
 
-      @report.failed += 1
+      report_failure
 
       @errors[:model] ||= []
 
       @errors[:model] << Error.new(index + 1, record.errors.full_messages)
+    end
+
+    def report_insert
+      @report.inserted += 1
+    end
+
+    def report_failure
+      @report.failed += 1
     end
   end
 end

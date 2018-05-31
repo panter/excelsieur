@@ -88,4 +88,15 @@ class ExcelsiorTest < Minitest::Test
     assert_equal 1, import.report.failed
     assert_equal 3, import.report.total
   end
+
+  def test_report_with_block
+    import = UserImport.new("test/files/missing-first-name.xlsx")
+    import.run do |v|
+      raise "failure!" if v[:first_name].nil?
+      v
+    end
+    assert_equal 2, import.report.inserted
+    assert_equal 1, import.report.failed
+    assert_equal 3, import.report.total
+  end
 end
