@@ -58,6 +58,22 @@ import.errors[:model]
 # => [#<struct Excelsior::Error row=3, errors=["First name can't be blank"]>]
 ```
 
+### Report
+
+A summary of the successfully inserted and failed records is available after
+running the importer.
+
+```ruby
+import = UserImport.new
+import.run
+
+import.report
+# => #<struct Excelsior::Report inserted=2, failed=1>
+
+import.total
+# => 3
+```
+
 ### Extended API
 
 You may want to pass an excel file per instance. You can also define your own
