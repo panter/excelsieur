@@ -44,6 +44,20 @@ import = UserImport.new
 import.run # calls User.create!(row) for each row
 ```
 
+### Model validation
+
+A summary of the `ActiveRecord` model validations is available after running
+the importer. The `Error` objects indicates the failed excel row and the
+corresponding errors.
+
+```ruby
+import = UserImport.new
+import.run
+
+import.errors[:model]
+# => [#<struct Excelsior::Error row=3, errors=["First name can't be blank"]>]
+```
+
 ### Extended API
 
 You may want to pass an excel file per instance. You can also define your own
