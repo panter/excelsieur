@@ -129,12 +129,20 @@ describe Excelsior do
         @import.run
         assert_equal User.all.size, 2
       end
+
+      it 'returns a result object' do
+        result = @import.run
+        assert_equal Excelsior::Result::Statuses::SUCCEEDED, result.status
+        assert_equal Excelsior::Report.new(2, 2, 0), result.report
+        assert_equal({ missing_column: [], model: [] }, result.errors)
+      end
     end
 
     describe 'with a block' do
-      it 'yields the records to the block' do
-        results = @import.run { |v| v }
-        assert_equal results, [
+      it 'yields each record to the block' do
+        results = []
+        @import.run { |v| results << v }
+        assert_equal [
           {
             first_name: 'Hans',
             last_name: 'Müller',
@@ -145,7 +153,14 @@ describe Excelsior do
             last_name: 'Brunz',
             email: 'jb@runz.com'
           }
-        ]
+        ], results
+      end
+
+      it 'returns a result object' do
+        result = @import.run { |v| v }
+        assert_equal Excelsior::Result::Statuses::SUCCEEDED, result.status
+        assert_equal Excelsior::Report.new(2, 2, 0), result.report
+        assert_equal({ missing_column: [], model: [] }, result.errors)
       end
     end
   end

@@ -8,6 +8,7 @@ require 'excelsior/mapping'
 require 'excelsior/error'
 require 'excelsior/report'
 require 'excelsior/transaction'
+require 'excelsior/result'
 
 module Excelsior
   class Import
@@ -15,8 +16,8 @@ module Excelsior
     include Mapping
     include Transaction
 
-    attr_accessor :source, :fields, :errors, :report
-    attr_accessor :rows, :columns
+    attr_accessor :source, :fields, :rows, :columns, :result
+    delegate :errors, :report, to: :result
 
     def initialize(file = nil)
       self.source = file || self.class.source_file
@@ -28,7 +29,7 @@ module Excelsior
       @columns = @sheet.rows.shift
       @rows = @sheet.rows
 
-      @report = Report.new
+      @result = Result.new(@rows.length)
 
       validate!
     end
@@ -40,23 +41,23 @@ module Excelsior
         model_class.transaction do
           insert_rows(&block)
 
-          raise ActiveRecord::Rollback if @report.failed.positive?
+          raise ActiveRecord::Rollback if report.failed.positive?
         end
       else
         insert_rows(&block)
       end
+
+      result
     end
 
     def validate!
-      @errors = fields.to_a.each_with_object({}) do |f, acc|
-        acc[:missing_column] ||= []
-
-        acc[:missing_column] << { missing: f[:header] } unless @columns.include?(f[:header])
+      fields.to_a.each do |f|
+        errors[:missing_column] << { missing: f[:header] } unless @columns.include?(f[:header])
       end
     end
 
     def valid?
-      @errors[:missing_column].empty?
+      result.status != Result::Statuses::FAILED
     end
 
     private
@@ -66,8 +67,6 @@ module Excelsior
     end
 
     def add_model_errors(record, index)
-      @errors[:model] ||= []
-
       if record.errors.empty?
         report_insert
         return
@@ -75,15 +74,15 @@ module Excelsior
 
       report_failure
 
-      @errors[:model] << Error.new(index + 1, record.errors.full_messages)
+      errors[:model] << Error.new(index + 1, record.errors.full_messages)
     end
 
     def report_insert
-      @report.inserted += 1
+      report.inserted += 1
     end
 
     def report_failure
-      @report.failed += 1
+      report.failed += 1
     end
 
     def insert_rows(&block)

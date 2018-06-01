@@ -44,6 +44,18 @@ import = UserImport.new
 import.run # calls User.create!(row) for each row
 ```
 
+The result is an instance of `Excelsior::Result`:
+
+```ruby
+result = import.run
+result.status
+# => :succeeded
+result.errors
+# => { missing_column: [], model: [] }
+result.report
+# => #<struct Excelsior::Report inserted=2, failed=0>
+```
+
 ### Model validation
 
 A summary of the `ActiveRecord` model validations is available after running
