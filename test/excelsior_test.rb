@@ -156,6 +156,12 @@ describe Excelsior do
       assert import.errors[:missing_column].any?
     end
 
+    it 'does not run the import' do
+      import = UserImport.new('test/files/missing-column.xlsx')
+      import.run
+      assert_equal 0, import.report.total
+    end
+
     it 'returns the model validation errors' do
       import = UserImport.new('test/files/missing-first-name.xlsx').tap(&:run)
       assert import.errors[:model].any?

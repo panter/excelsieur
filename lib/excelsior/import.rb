@@ -30,10 +30,12 @@ module Excelsior
 
       @report = Report.new
 
-      valid?
+      validate!
     end
 
     def run(&block)
+      return unless valid?
+
       if self.class.use_transaction
         model_class.transaction do
           insert_rows(&block)
@@ -45,12 +47,16 @@ module Excelsior
       end
     end
 
-    def valid?
+    def validate!
       @errors = fields.to_a.each_with_object({}) do |f, acc|
         acc[:missing_column] ||= []
 
         acc[:missing_column] << { missing: f[:header] } unless @columns.include?(f[:header])
       end
+    end
+
+    def valid?
+      @errors[:missing_column].empty?
     end
 
     private
@@ -60,14 +66,14 @@ module Excelsior
     end
 
     def add_model_errors(record, index)
+      @errors[:model] ||= []
+
       if record.errors.empty?
         report_insert
         return
       end
 
       report_failure
-
-      @errors[:model] ||= []
 
       @errors[:model] << Error.new(index + 1, record.errors.full_messages)
     end
