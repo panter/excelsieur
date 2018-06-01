@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'simple_xlsx_reader'
 require 'rails'
 require 'active_record'
@@ -20,7 +22,7 @@ module Excelsior
       self.source = file || self.class.source_file
       self.fields = self.class.fields
 
-      @doc = ::SimpleXlsxReader.open(self.source)
+      @doc = ::SimpleXlsxReader.open(source)
       @sheet = @doc.sheets.first
 
       @columns = @sheet.rows.shift
@@ -36,7 +38,7 @@ module Excelsior
         model_class.transaction do
           insert_rows(&block)
 
-          raise ActiveRecord::Rollback if @report.failed > 0
+          raise ActiveRecord::Rollback if @report.failed.positive?
         end
       else
         insert_rows(&block)
@@ -44,20 +46,17 @@ module Excelsior
     end
 
     def valid?
-      @errors = fields.to_a.reduce({}) do |acc, f|
+      @errors = fields.to_a.each_with_object({}) do |f, acc|
         acc[:missing_column] ||= []
 
-        unless @columns.include?(f[:header])
-          acc[:missing_column] << { missing: f[:header] }
-        end
-        acc
+        acc[:missing_column] << { missing: f[:header] } unless @columns.include?(f[:header])
       end
     end
 
     private
 
     def model_class
-      self.class.name.gsub("Import", "").constantize
+      self.class.name.gsub('Import', '').constantize
     end
 
     def add_model_errors(record, index)
@@ -84,19 +83,29 @@ module Excelsior
     def insert_rows(&block)
       @rows.map.with_index do |row, i|
         attributes = map_row_values(row, @columns)
-        if block_given?
-          begin
-            result = block.call(attributes)
-            report_insert
-            result
-          rescue
-            report_failure
-          end
-        else
-          record = model_class.create(attributes)
-          add_model_errors(record, i)
-        end
+        insert_row(attributes, i, &block)
       end
+    end
+
+    def insert_row(attributes, index, &block)
+      if block_given?
+        insert_row_with_block(attributes, &block)
+      else
+        insert_row_without_block(attributes, index)
+      end
+    end
+
+    def insert_row_with_block(attributes)
+      result = yield(attributes)
+      report_insert
+      result
+    rescue StandardError
+      report_failure
+    end
+
+    def insert_row_without_block(attributes, index)
+      record = model_class.create(attributes)
+      add_model_errors(record, index)
     end
   end
 end

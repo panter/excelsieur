@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Excelsior
   module Mapping
     def self.included(host_class)
@@ -17,10 +19,9 @@ module Excelsior
     end
 
     def map_row_values(row, columns)
-      @fields.to_a.reduce({}) do |acc, field|
+      @fields.to_a.each_with_object({}) do |field, acc|
         idx = columns.index(field[:header])
         acc[field[:attribute]] = row[idx]
-        acc
       end
     end
   end

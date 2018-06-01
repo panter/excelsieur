@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Excelsior
   module Transaction
     def self.included(host_class)

@@ -4,9 +4,15 @@ cache:
   paths:
   - vendor/
 
+before_script:
+  - bundle install -j $(nproc) --path vendor
+
 test:
   stage: test
   script:
-  - apt-get update -qy
-  - bundle install --path vendor
-  - bundle exec rake test
+    - bundle exec rake test
+
+rubocop:
+  stage: test
+  script:
+    - bundle exec rubocop

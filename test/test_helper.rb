@@ -1,11 +1,15 @@
-$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-require "excelsior"
-require 'active_record'
-require "minitest/autorun"
+# frozen_string_literal: true
 
-class MiniTest::Spec
-  before do
-    User.delete_all
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+require 'excelsior'
+require 'active_record'
+require 'minitest/autorun'
+
+module MiniTest
+  class Spec
+    before do
+      User.delete_all
+    end
   end
 end
 

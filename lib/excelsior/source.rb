@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Excelsior
   module Source
     def self.included(host_class)

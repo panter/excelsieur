@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Excelsior
   Report = Struct.new(:inserted, :failed) do
     def initialize(*args)

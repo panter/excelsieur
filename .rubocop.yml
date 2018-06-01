@@ -1,0 +1,10 @@
+Metrics/LineLength:
+  Max: 100
+
+# exclude for tests
+Metrics/BlockLength:
+  ExcludedMethods: ['describe', 'it']
+
+# don't require documentation on classes / modules
+Style/Documentation:
+  Enabled: false
