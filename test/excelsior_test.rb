@@ -167,7 +167,7 @@ describe Excelsior do
 
   describe '#errors' do
     it 'returns an error when a column is missing in the excel' do
-      import = UserImport.new('test/files/missing-column.xlsx')
+      import = UserImport.new('test/files/missing-column.xlsx').tap(&:run)
       assert import.errors[:missing_column].any?
     end
 

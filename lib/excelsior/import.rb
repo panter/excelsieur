@@ -30,19 +30,15 @@ module Excelsior
       @rows = @sheet.rows
 
       @result = Result.new(@rows.length)
-
-      validate!
     end
 
     def run(&block)
-      return unless valid?
+      check_columns!
+
+      return if result.failed?
 
       if self.class.use_transaction
-        model_class.transaction do
-          insert_rows(&block)
-
-          raise ActiveRecord::Rollback if report.failed.positive?
-        end
+        run_with_transaction(&block)
       else
         insert_rows(&block)
       end
@@ -50,20 +46,24 @@ module Excelsior
       result
     end
 
-    def validate!
+    private
+
+    def check_columns!
       fields.to_a.each do |f|
         errors[:missing_column] << { missing: f[:header] } unless @columns.include?(f[:header])
       end
     end
 
-    def valid?
-      result.status != Result::Statuses::FAILED
-    end
-
-    private
-
     def model_class
       self.class.name.gsub('Import', '').constantize
+    end
+
+    def run_with_transaction(&block)
+      model_class.transaction do
+        insert_rows(&block)
+
+        raise ActiveRecord::Rollback if report.failed.positive?
+      end
     end
 
     def add_model_errors(record, index)

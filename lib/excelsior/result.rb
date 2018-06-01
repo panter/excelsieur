@@ -27,5 +27,9 @@ module Excelsior
         Statuses::PENDING
       end
     end
+
+    def failed?
+      status == Result::Statuses::FAILED
+    end
   end
 end
