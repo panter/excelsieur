@@ -3,6 +3,12 @@ require "excelsior"
 require 'active_record'
 require "minitest/autorun"
 
+class MiniTest::Spec
+  before do
+    User.delete_all
+  end
+end
+
 ActiveRecord::Base.establish_connection(
   adapter: 'sqlite3',
   database: File.dirname(__FILE__) + '/test.sqlite3'
