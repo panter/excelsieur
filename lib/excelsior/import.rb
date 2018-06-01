@@ -5,11 +5,13 @@ require 'excelsior/source'
 require 'excelsior/mapping'
 require 'excelsior/error'
 require 'excelsior/report'
+require 'excelsior/transaction'
 
 module Excelsior
   class Import
     include Source
     include Mapping
+    include Transaction
 
     attr_accessor :source, :fields, :errors, :report
     attr_accessor :rows, :columns
@@ -29,21 +31,15 @@ module Excelsior
       valid?
     end
 
-    def run # takes an optional block
-      @rows.map.with_index do |row, i|
-        attributes = map_row_values(row, @columns)
-        if block_given?
-          begin
-            result = yield attributes
-            report_insert
-            result
-          rescue
-            report_failure
-          end
-        else
-          record = model_class.create(attributes)
-          add_model_errors(record, i)
+    def run(&block)
+      if self.class.use_transaction
+        model_class.transaction do
+          insert_rows(&block)
+
+          raise ActiveRecord::Rollback if @report.failed > 0
         end
+      else
+        insert_rows(&block)
       end
     end
 
@@ -83,6 +79,24 @@ module Excelsior
 
     def report_failure
       @report.failed += 1
+    end
+
+    def insert_rows(&block)
+      @rows.map.with_index do |row, i|
+        attributes = map_row_values(row, @columns)
+        if block_given?
+          begin
+            result = block.call(attributes)
+            report_insert
+            result
+          rescue
+            report_failure
+          end
+        else
+          record = model_class.create(attributes)
+          add_model_errors(record, i)
+        end
+      end
     end
   end
 end

@@ -1,20 +1,22 @@
 require "test_helper"
 require "excelsior/import"
 
-class UserImport < Excelsior::Import
-  source "test/files/complete.xlsx"
-
-  map "Vorname", to: :first_name
-  map "Nachname", to: :last_name
-  map "E-Mail", to: :email
-end
-
 class User < ActiveRecord::Base
   validates :first_name, presence: true
 end
 
 describe Excelsior do
   before do
+    Object.send(:remove_const, :UserImport) if Object.constants.include?(:UserImport)
+
+    class UserImport < Excelsior::Import
+      source "test/files/complete.xlsx"
+
+      map "Vorname", to: :first_name
+      map "Nachname", to: :last_name
+      map "E-Mail", to: :email
+    end
+
     @import = UserImport.new
   end
 
@@ -31,6 +33,66 @@ describe Excelsior do
     it 'allows setting the source on an instance level' do
       import = UserImport.new("test/files/missing-column.xlsx")
       assert_equal "test/files/missing-column.xlsx", import.source
+    end
+  end
+
+  describe 'transaction' do
+    describe 'transaction is not set' do
+      it 'inserts only the valid rows' do
+        UserImport.new("test/files/missing-first-name.xlsx").run
+        assert_equal 2, User.count
+      end
+    end
+
+    describe 'transaction is set to true' do
+      before do
+        Object.send(:remove_const, :UserImport) if Object.constants.include?(:UserImport)
+
+        class UserImport < Excelsior::Import
+          source "test/files/complete.xlsx"
+          transaction true
+
+          map "Vorname", to: :first_name
+          map "Nachname", to: :last_name
+          map "E-Mail", to: :email
+        end
+      end
+
+      describe 'without a block' do
+        let(:import) { UserImport.new("test/files/missing-first-name.xlsx") }
+
+        before do
+          import.run
+        end
+
+        it 'rolls back if one record fails' do
+          assert_equal 0, User.count
+        end
+
+        it 'returns the report' do
+          assert_equal 2, import.report.inserted
+          assert_equal 1, import.report.failed
+          assert_equal 3, import.report.total
+        end
+      end
+
+      describe 'with a block' do
+        it 'rolls back if one record raises an error' do
+          UserImport.new("test/files/missing-first-name.xlsx").run do |v|
+            User.create!(v)
+          end
+
+          assert_equal 0, User.count
+        end
+
+        it 'does not roll back if the block does not raise an error' do
+          UserImport.new("test/files/missing-first-name.xlsx").run do |v|
+            User.create(v)
+          end
+
+          assert_equal 2, User.count
+        end
+      end
     end
   end
 
