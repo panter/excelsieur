@@ -74,6 +74,47 @@ import.total
 # => 3
 ```
 
+### Transactions
+
+When setting `transaction true` no record is inserted if any one of them has an error.
+
+```ruby
+class UserImporter < Excelsior::Importer
+  # declare the source file
+  source "static/ftp/users.xlsx"
+
+  # only insert all rows if none of them have an error
+  transaction true
+
+  # declare the mapping
+  map "First Name", to: :firstname
+  map "Last Name", to: :lastname
+  map "E-Mail", to: :email
+end
+```
+
+If a block is passed to `run` the block needs to raise an error in order to
+roll back the transaction.
+
+This means that the following will trigger a rollback if the model is not
+valid:
+
+```ruby
+UserImport.new.run do |row|
+  User.create!(row)
+end
+```
+
+On the other hand, the following won't trigger a rollback if the model is
+invalid:
+
+```ruby
+UserImport.new.run do |row|
+  User.create(row)
+end
+```
+
+
 ### Extended API
 
 You may want to pass an excel file per instance. You can also define your own
