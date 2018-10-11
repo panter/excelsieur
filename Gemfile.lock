@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    excelsior (0.1.0)
+    excelsieur (0.1.0)
       activerecord (>= 4.0.0)
       rails (>= 4.0.0)
       simple_xlsx_reader (~> 1.0.2)
@@ -142,7 +142,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.16)
-  excelsior!
+  excelsieur!
   minitest (~> 5.0)
   rake (~> 10.0)
   rubocop (~> 0.56.0)

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-module Excelsior
+module Excelsieur
   Error = Struct.new(:row, :errors)
 end

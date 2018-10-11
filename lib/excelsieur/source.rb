@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-module Excelsior
-  module Transaction
+module Excelsieur
+  module Source
     def self.included(host_class)
       host_class.extend ClassMethods
     end
 
     module ClassMethods
-      attr_accessor :use_transaction
+      attr_accessor :source_file
 
-      def transaction(use_transaction)
-        self.use_transaction = use_transaction
+      def source(file)
+        self.source_file = file
       end
     end
   end

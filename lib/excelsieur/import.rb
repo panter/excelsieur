@@ -3,14 +3,14 @@
 require 'simple_xlsx_reader'
 require 'rails'
 require 'active_record'
-require 'excelsior/source'
-require 'excelsior/mapping'
-require 'excelsior/error'
-require 'excelsior/report'
-require 'excelsior/transaction'
-require 'excelsior/result'
+require 'excelsieur/source'
+require 'excelsieur/mapping'
+require 'excelsieur/error'
+require 'excelsieur/report'
+require 'excelsieur/transaction'
+require 'excelsieur/result'
 
-module Excelsior
+module Excelsieur
   class Import
     include Source
     include Mapping

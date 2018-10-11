@@ -1,4 +1,4 @@
-<img src="docs/excelsior-logo.png" width="480">
+<img src="docs/excelsieur-logo.png" width="480">
 
 ---
 
@@ -9,7 +9,7 @@ A straightforward way to import data from an excel sheet into your ruby app.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'excelsior'
+gem 'excelsieur'
 ```
 
 And then execute:
@@ -18,14 +18,14 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install excelsior
+    $ gem install excelsieur
 
 ## How to use it
 
-Create a class which declares how columns from an excel sheet map to your ruby object model by extending from the `Excelsior::Importer` class:
+Create a class which declares how columns from an excel sheet map to your ruby object model by extending from the `Excelsieur::Importer` class:
 
 ```ruby
-class UserImporter < Excelsior::Importer
+class UserImporter < Excelsieur::Importer
   # declare the source file
   source "static/ftp/users.xlsx"
 
@@ -44,7 +44,7 @@ import = UserImport.new
 import.run # calls User.create!(row) for each row
 ```
 
-The result is an instance of `Excelsior::Result`:
+The result is an instance of `Excelsieur::Result`:
 
 ```ruby
 result = import.run
@@ -53,7 +53,7 @@ result.status
 result.errors
 # => { missing_column: [], model: [] }
 result.report
-# => #<struct Excelsior::Report inserted=2, failed=0>
+# => #<struct Excelsieur::Report inserted=2, failed=0>
 ```
 
 ### Model validation
@@ -67,7 +67,7 @@ import = UserImport.new
 import.run
 
 import.errors[:model]
-# => [#<struct Excelsior::Error row=3, errors=["First name can't be blank"]>]
+# => [#<struct Excelsieur::Error row=3, errors=["First name can't be blank"]>]
 ```
 
 ### Report
@@ -80,7 +80,7 @@ import = UserImport.new
 import.run
 
 import.report
-# => #<struct Excelsior::Report inserted=2, failed=1>
+# => #<struct Excelsieur::Report inserted=2, failed=1>
 
 import.total
 # => 3
@@ -91,7 +91,7 @@ import.total
 When setting `transaction true` no record is inserted if any one of them has an error.
 
 ```ruby
-class UserImporter < Excelsior::Importer
+class UserImporter < Excelsieur::Importer
   # declare the source file
   source "static/ftp/users.xlsx"
 
@@ -153,7 +153,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/manufaktor/excelsior.
+Bug reports and pull requests are welcome on GitHub at https://github.com/panter/excelsieur.
 
 ## License
 

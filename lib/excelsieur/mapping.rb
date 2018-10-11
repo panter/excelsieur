@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Excelsior
+module Excelsieur
   module Mapping
     def self.included(host_class)
       host_class.extend ClassMethods

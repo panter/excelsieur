@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'excelsior/import'
+require 'excelsieur/import'
 
 class User < ActiveRecord::Base
   validates :first_name, presence: true
 end
 
-describe Excelsior do
+describe Excelsieur do
   before do
     Object.send(:remove_const, :UserImport) if Object.constants.include?(:UserImport)
 
-    class UserImport < Excelsior::Import
+    class UserImport < Excelsieur::Import
       source 'test/files/complete.xlsx'
 
       map 'Vorname', to: :first_name
@@ -23,7 +23,7 @@ describe Excelsior do
   end
 
   it 'has a version number' do
-    refute_nil ::Excelsior::VERSION
+    refute_nil ::Excelsieur::VERSION
   end
 
   describe 'source' do
@@ -50,7 +50,7 @@ describe Excelsior do
       before do
         Object.send(:remove_const, :UserImport) if Object.constants.include?(:UserImport)
 
-        class UserImport < Excelsior::Import
+        class UserImport < Excelsieur::Import
           source 'test/files/complete.xlsx'
           transaction true
 
@@ -132,8 +132,8 @@ describe Excelsior do
 
       it 'returns a result object' do
         result = @import.run
-        assert_equal Excelsior::Result::Statuses::SUCCEEDED, result.status
-        assert_equal Excelsior::Report.new(2, 2, 0), result.report
+        assert_equal Excelsieur::Result::Statuses::SUCCEEDED, result.status
+        assert_equal Excelsieur::Report.new(2, 2, 0), result.report
         assert_equal({ missing_column: [], model: [] }, result.errors)
       end
     end
@@ -158,8 +158,8 @@ describe Excelsior do
 
       it 'returns a result object' do
         result = @import.run { |v| v }
-        assert_equal Excelsior::Result::Statuses::SUCCEEDED, result.status
-        assert_equal Excelsior::Report.new(2, 2, 0), result.report
+        assert_equal Excelsieur::Result::Statuses::SUCCEEDED, result.status
+        assert_equal Excelsieur::Report.new(2, 2, 0), result.report
         assert_equal({ missing_column: [], model: [] }, result.errors)
       end
     end
@@ -180,7 +180,7 @@ describe Excelsior do
     it 'returns the model validation errors' do
       import = UserImport.new('test/files/missing-first-name.xlsx').tap(&:run)
       assert import.errors[:model].any?
-      assert_equal import.errors[:model], [Excelsior::Error.new(3, ["First name can't be blank"])]
+      assert_equal import.errors[:model], [Excelsieur::Error.new(3, ["First name can't be blank"])]
     end
   end
 

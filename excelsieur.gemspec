@@ -2,18 +2,18 @@
 
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'excelsior/version'
+require 'excelsieur/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'excelsior'
-  spec.version       = Excelsior::VERSION
+  spec.name          = 'excelsieur'
+  spec.version       = Excelsieur::VERSION
   spec.authors       = ['Immanuel Häussermann', 'Alexis Reigel']
   spec.email         = ['hai@panter.ch', 'lex@panter.ch']
 
   spec.summary       = 'Helps you import data from an excel sheet'
   spec.description   = 'Provides a concise DSL to map, validate and import data ' \
                        'from an excel sheet into your ruby app'
-  spec.homepage      = 'https://git.panter.ch/open-source/excelsior'
+  spec.homepage      = 'https://git.panter.ch/open-source/excelsieur'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|

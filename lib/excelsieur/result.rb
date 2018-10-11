@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Excelsior
+module Excelsieur
   class Result
     module Statuses
       PENDING = :pending
