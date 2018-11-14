@@ -1,3 +1,5 @@
+[![pipeline status](https://git.panter.ch/open-source/excelsieur/badges/master/pipeline.svg)](https://git.panter.ch/open-source/excelsieur/commits/master)
+
 <img src="docs/excelsieur-logo.png" width="480">
 
 ---
