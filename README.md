@@ -1,4 +1,5 @@
 [![pipeline status](https://git.panter.ch/open-source/excelsieur/badges/master/pipeline.svg)](https://git.panter.ch/open-source/excelsieur/commits/master)
+[![Gem Version](https://badge.fury.io/rb/excelsieur.svg)](https://badge.fury.io/rb/excelsieur)
 
 <img src="docs/excelsieur-logo.png" width="480">
 
